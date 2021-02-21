@@ -1,0 +1,19 @@
+---
+- name: run OpenSCAP scan
+  ansible.builtin.shell: |
+    oscap xccdf eval \
+    --profile xccdf_org.ssgproject.content_profile_pci-dss \
+    --results-arf arf_$(hostname -s)_$(date +"%Y-%m-%d-%T").xml \
+    --report report_$(hostname -s)_$(date +"%Y-%m-%d-%T").html \
+    /usr/share/xml/scap/ssg/content/ssg-rhel8-ds.xml
+
+- name: sync files to S3
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  aws_s3:
+    aws_access_key:  "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    bucket: openscap-data
+    object: "*.html"
+    dest: /
+    mode: put

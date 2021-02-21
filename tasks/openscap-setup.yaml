@@ -1,0 +1,19 @@
+---
+- name: install OpenSCAP tooling on all test machines
+  yum:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - openscap-scanner
+      - scap-security-guide
+
+- name: install required AWS python packages
+  pip:
+    name: "{{ packages }}"
+    executable: pip3
+  vars:
+    packages:
+      - boto
+      - boto3
+      - botocore
